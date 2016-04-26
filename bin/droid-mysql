@@ -18,4 +18,5 @@ require $loader;
 $application = new Application('Droid Mysql', '1.0.0');
 $application->setCatchExceptions(true);
 $application->add(new Droid\Plugin\Mysql\Command\MysqlDumpCommand());
+$application->add(new Droid\Plugin\Mysql\Command\MysqlLoadCommand());
 $application->run();
