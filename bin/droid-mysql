@@ -2,6 +2,7 @@
 <?php
 
 use Symfony\Component\Console\Application;
+use Droid\Plugin\Mysql\DroidPlugin;
 
 $loader = __DIR__ . '/../vendor/autoload.php';
 
@@ -17,7 +18,10 @@ require $loader;
 
 $application = new Application('Droid Mysql', '1.0.0');
 $application->setCatchExceptions(true);
-$application->add(new Droid\Plugin\Mysql\Command\MysqlDumpCommand());
-$application->add(new Droid\Plugin\Mysql\Command\MysqlDumpAllCommand());
-$application->add(new Droid\Plugin\Mysql\Command\MysqlLoadCommand());
+
+$registry = new DroidPlugin($application);
+foreach ($registry->getCommands() as $command) {
+    $application->add($command);
+}
+
 $application->run();
