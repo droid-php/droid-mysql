@@ -2,7 +2,8 @@
 
 namespace Droid\Test\Plugin\Mysql\Db;
 
-use \PDOException;
+use PDO;
+use PDOException;
 
 use Droid\Plugin\Mysql\Db\Client;
 use Droid\Plugin\Mysql\Db\Config;
@@ -150,12 +151,46 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this
             ->pdoStatement
             ->expects($this->once())
+            ->method('bindValue')
+            ->with(':something', 'all the things', $this->client->typeStr())
+            ->willReturn(true)
+        ;
+        $this
+            ->pdoStatement
+            ->expects($this->once())
             ->method('execute')
-            ->with($params)
             ->willReturn(true)
         ;
 
         $this->assertTrue($this->client->execute($statement, $params));
+    }
+
+    public function testExecuteParamsCanIncludeDataType()
+    {
+        $statement = 'SELECT :something';
+        $params = array(
+            ':something' => array(1, $this->client->typeInt())
+        );
+
+        $this
+            ->fac
+            ->method('create')
+            ->willReturn($this->connection)
+        ;
+        $this
+            ->connection
+            ->method('prepare')
+            ->with($statement)
+        ;
+        $this
+            ->pdoStatement
+            ->expects($this->once())
+            ->method('bindValue')
+            ->with(':something', 1, $this->client->typeInt())
+            ->willReturn(true)
+        ;
+
+        $this->client->execute($statement, $params);
     }
 
     /**
@@ -230,8 +265,14 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this
             ->pdoStatement
             ->expects($this->once())
+            ->method('bindValue')
+            ->with(':something', 'all the things', $this->client->typeStr())
+            ->willReturn(true)
+        ;
+        $this
+            ->pdoStatement
+            ->expects($this->once())
             ->method('execute')
-            ->with($params)
             ->willReturn(true)
         ;
         $this
@@ -263,8 +304,59 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this
             ->pdoStatement
             ->expects($this->once())
+            ->method('bindValue')
+            ->with(':something', 'all the things', $this->client->typeStr())
+            ->willReturn(true)
+        ;
+        $this
+            ->pdoStatement
+            ->expects($this->once())
             ->method('execute')
-            ->with($params)
+            ->willReturn(true)
+        ;
+        $this
+            ->pdoStatement
+            ->expects($this->once())
+            ->method('fetchAll')
+            ->willReturn($result)
+        ;
+
+        $this->assertSame(
+            $result,
+            $this->client->getResults($statement, $params)
+        );
+    }
+
+    public function testGetResultsParamsCanIncludeDataType()
+    {
+        $statement = 'SELECT :something';
+        $params = array(
+            ':something' => array(1, $this->client->typeInt())
+        );
+        $result = array(array('r1c1-value'), array('r2c1-value'));
+
+        $this
+            ->fac
+            ->method('create')
+            ->willReturn($this->connection)
+        ;
+        $this
+            ->connection
+            ->expects($this->once())
+            ->method('prepare')
+            ->with($statement)
+        ;
+        $this
+            ->pdoStatement
+            ->expects($this->once())
+            ->method('bindValue')
+            ->with(':something', 1, $this->client->typeInt())
+            ->willReturn(true)
+        ;
+        $this
+            ->pdoStatement
+            ->expects($this->once())
+            ->method('execute')
             ->willReturn(true)
         ;
         $this
@@ -300,8 +392,14 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this
             ->pdoStatement
             ->expects($this->once())
+            ->method('bindValue')
+            ->with(':something', 'all the things', $this->client->typeStr())
+            ->willReturn(true)
+        ;
+        $this
+            ->pdoStatement
+            ->expects($this->once())
             ->method('execute')
-            ->with($params)
             ->willReturn(true)
         ;
         $this
@@ -336,8 +434,14 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this
             ->pdoStatement
             ->expects($this->once())
+            ->method('bindValue')
+            ->with(':something', 'all the things', $this->client->typeStr())
+            ->willReturn(true)
+        ;
+        $this
+            ->pdoStatement
+            ->expects($this->once())
             ->method('execute')
-            ->with($params)
             ->willReturn(true)
         ;
         $this
@@ -348,5 +452,30 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         ;
 
         $this->assertNull($this->client->getSingleResult($statement, $params));
+    }
+
+    public function testTypeBoolReturnsPDOParamContant()
+    {
+        $this->assertSame(PDO::PARAM_BOOL, $this->client->typeBool());
+    }
+
+    public function testTypeIntReturnsPDOParamContant()
+    {
+        $this->assertSame(PDO::PARAM_INT, $this->client->typeInt());
+    }
+
+    public function testTypeLobReturnsPDOParamContant()
+    {
+        $this->assertSame(PDO::PARAM_LOB, $this->client->typeLob());
+    }
+
+    public function testTypeNullReturnsPDOParamContant()
+    {
+        $this->assertSame(PDO::PARAM_NULL, $this->client->typeNull());
+    }
+
+    public function testTypeStrReturnsPDOParamContant()
+    {
+        $this->assertSame(PDO::PARAM_STR, $this->client->typeStr());
     }
 }
