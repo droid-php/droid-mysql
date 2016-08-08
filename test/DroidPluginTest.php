@@ -19,6 +19,7 @@ class DroidPluginTest extends \PHPUnit_Framework_TestCase
             array(
                 'Droid\Plugin\Mysql\Command\MysqlAdduserCommand',
                 'Droid\Plugin\Mysql\Command\MysqlDeluserCommand',
+                'Droid\Plugin\Mysql\Command\MysqlMasterInfoCommand',
                 'Droid\Plugin\Mysql\Command\MysqlDumpCommand',
                 'Droid\Plugin\Mysql\Command\MysqlDumpAllCommand',
                 'Droid\Plugin\Mysql\Command\MysqlLoadCommand',

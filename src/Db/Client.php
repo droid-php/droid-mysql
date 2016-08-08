@@ -54,7 +54,10 @@ class Client
      * Execute a statement, returning boolean true on success.
      *
      * @param string $statement
-     * @param array $params
+     * @param array $params The keys of the array are the one-indexed parameter
+     *                      number or the colon-prefixed parameter name. The
+     *                      values are either a string or an array containing
+     *                      the value and the data type (i.e. PDO::PARAM_*).
      *
      * @return boolean
      *
@@ -75,8 +78,17 @@ class Client
             );
         }
 
+        foreach ($params as $name => $paramInfo) {
+            if (is_string($paramInfo)) {
+                $preparedStmt->bindValue($name, $paramInfo, PDO::PARAM_STR);
+            } elseif (is_array($paramInfo)) {
+                list($value, $type) = $paramInfo;
+                $preparedStmt->bindValue($name, $value, $type);
+            }
+        }
+
         try {
-            $result = $preparedStmt->execute($params);
+            $result = $preparedStmt->execute();
         } catch (PDOException $e) {
             throw new ClientException(
                 'Failed to execute MySQL statement.',
@@ -92,7 +104,10 @@ class Client
      * Execute a statement, returning all results.
      *
      * @param string $statement
-     * @param array $params
+     * @param array $params The keys of the array are the one-indexed parameter
+     *                      number or the colon-prefixed parameter name. The
+     *                      values are either a string or an array containing
+     *                      the value and the data type (i.e. PDO::PARAM_*).
      *
      * @return array
      *
@@ -113,8 +128,17 @@ class Client
             );
         }
 
+        foreach ($params as $name => $paramInfo) {
+            if (is_string($paramInfo)) {
+                $preparedStmt->bindValue($name, $paramInfo, PDO::PARAM_STR);
+            } elseif (is_array($paramInfo)) {
+                list($value, $type) = $paramInfo;
+                $preparedStmt->bindValue($name, $value, $type);
+            }
+        }
+
         try {
-            $preparedStmt->execute($params);
+            $preparedStmt->execute();
         } catch (PDOException $e) {
             throw new ClientException(
                 'Failed to execute MySQL statement.',
@@ -155,5 +179,59 @@ class Client
         }
 
         return $result[0];
+    }
+
+    /**
+     * Get a constant which specifies that the type of a parameter is a boolean.
+     *
+     * @return int
+     */
+    public function typeBool()
+    {
+        return PDO::PARAM_BOOL;
+    }
+
+    /**
+     * Get a constant which specifies that the type of a parameter is an SQL
+     * INTEGER.
+     *
+     * @return int
+     */
+    public function typeInt()
+    {
+        return PDO::PARAM_INT;
+    }
+
+    /**
+     * Get a constant which specifies that the type of a parameter is an SQL
+     * large object.
+     *
+     * @return int
+     */
+    public function typeLob()
+    {
+        return PDO::PARAM_LOB;
+    }
+
+    /**
+     * Get a constant which specifies that the type of a parameter is an SQL
+     * NULL.
+     *
+     * @return int
+     */
+    public function typeNull()
+    {
+        return PDO::PARAM_NULL;
+    }
+
+    /**
+     * Get a constant which specifies that the type of a parameter is an SQL
+     * CHAR or VARCHAR.
+     *
+     * @return int
+     */
+    public function typeStr()
+    {
+        return PDO::PARAM_STR;
     }
 }
