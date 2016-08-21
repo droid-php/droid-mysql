@@ -126,7 +126,10 @@ class User
             $params[':host'] = strtolower($this->host) == 'any' ? '%' : $this->host;
         }
 
+        // Wrap in 'FLUSH PRIVILEGES' commands to update in-memory state
+        $this->client->execute('FLUSH PRIVILEGES');
         $this->client->execute(implode(' ', $parts), $params);
+        $this->client->execute('FLUSH PRIVILEGES');
     }
 
     /**
@@ -154,7 +157,10 @@ class User
             $params[':password'] = $this->password;
         }
 
+        // Wrap in 'FLUSH PRIVILEGES' commands to update in-memory state
+        $this->client->execute('FLUSH PRIVILEGES');
         $this->client->execute(implode(' ', $parts), $params);
+        $this->client->execute('FLUSH PRIVILEGES');
     }
 
     /**
@@ -202,7 +208,10 @@ class User
         if ($this->grantGrant) {
             $parts[] = 'WITH GRANT OPTION';
         }
-
+        
+        // Wrap in 'FLUSH PRIVILEGES' commands to update in-memory state
+        $this->client->execute('FLUSH PRIVILEGES');
         $this->client->execute(implode(' ', $parts), $params);
+        $this->client->execute('FLUSH PRIVILEGES');
     }
 }
