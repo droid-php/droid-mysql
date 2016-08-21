@@ -64,6 +64,12 @@ class MysqlAdduserCommand extends Command
                 InputOption::VALUE_REQUIRED,
                 'Grant the privileges ON this level (e.g. *.*, dbname.*, dbname.tablename, etc.)'
             )
+            ->addOption(
+                'can-grant',
+                null,
+                InputOption::VALUE_NONE,
+                'Grant the user to grant other users own privileges'
+            )
         ;
         $this->configureCheckMode();
     }
@@ -95,6 +101,9 @@ class MysqlAdduserCommand extends Command
             ->setGrants($input->getOption('grant'))
             ->setGrantLevel($input->getOption('grant-level'))
         ;
+        if ($input->getOption('can-grant')) {
+            $user->setCanGrant(true);
+        }
 
         if ($user->exists()) {
             $output->writeln(
