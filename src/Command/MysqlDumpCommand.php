@@ -4,11 +4,9 @@ namespace Droid\Plugin\Mysql\Command;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
-use Symfony\Component\Process\ProcessBuilder;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use RuntimeException;
 
@@ -116,7 +114,10 @@ class MysqlDumpCommand extends BaseMysqlDumpCommand
         
         $process = new Process($cmd);
         $output->writeLn(str_replace($pass, '***', $process->getCommandLine()));
-        $process->run();
+        $process
+            ->setTimeout(0.0)
+            ->run()
+        ;
 
         if (!$process->isSuccessful()) {
             throw new ProcessFailedException($process);

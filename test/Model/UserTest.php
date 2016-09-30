@@ -125,9 +125,13 @@ class UserTest extends \PHPUnit_Framework_TestCase
 
         $this
             ->client
-            ->expects($this->once())
+            ->expects($this->exactly(3))
             ->method('execute')
-            ->with($statement, $params)
+            ->withConsecutive(
+                array('FLUSH PRIVILEGES'),
+                array($statement, $params),
+                array('FLUSH PRIVILEGES')
+            )
         ;
 
         $this->user->create();
@@ -206,9 +210,13 @@ class UserTest extends \PHPUnit_Framework_TestCase
 
         $this
             ->client
-            ->expects($this->once())
+            ->expects($this->exactly(3))
             ->method('execute')
-            ->with($statement, $params)
+            ->withConsecutive(
+                array('FLUSH PRIVILEGES'),
+                array($statement, $params),
+                array('FLUSH PRIVILEGES')
+            )
         ;
 
         $this->user->delete();
@@ -259,9 +267,13 @@ class UserTest extends \PHPUnit_Framework_TestCase
 
         $this
             ->client
-            ->expects($this->once())
+            ->expects($this->exactly(3))
             ->method('execute')
-            ->with($statement, $params)
+            ->withConsecutive(
+                array('FLUSH PRIVILEGES'),
+                array($statement, $params),
+                array('FLUSH PRIVILEGES')
+            )
         ;
 
         $this->user->grant();
